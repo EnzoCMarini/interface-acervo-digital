@@ -1,18 +1,18 @@
 // Classe responsável por fazer requisições à API - emprestimo
 class EmprestimoRequests {
-    private serverUrl;
-    private endpointListarEmprestimos;
+    private serverURL;
+    private endpointEmprestimo;
 
     constructor() {
-        this.serverUrl = 'http://localhost:3333';
-        this.endpointListarEmprestimos = '/api/emprestimos';
+        this.serverURL = 'http://localhost:3333';
+        this.endpointEmprestimo = '/api/emprestimos';
     }
 
-    async listarEmprestimos() {
+    async obterListaDeEmprestimos() {
         try {
             const token = localStorage.getItem('token');
 
-            const respostaAPI = await fetch(`${this.serverUrl}${this.endpointListarEmprestimos}`, {
+            const respostaAPI = await fetch(`${this.serverURL}${this.endpointEmprestimo}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': `${token}`
@@ -23,14 +23,13 @@ class EmprestimoRequests {
                 const listaDeEmprestimos = await respostaAPI.json();
                 return listaDeEmprestimos;
             } else {
-                throw new Error('Não foi possível listar as Emprestimos.');
+                throw new Error("Não foi possível listar os empréstimos.");
             }
         } catch (error) {
-            console.error(`Erro ao fazer a consulta de emprestimos. ${error}`);
+            console.error(`Erro ao fazer a consulta de empréstimos. ${error}`);
             return;
         }
     }
-
 }
 
 export default new EmprestimoRequests;

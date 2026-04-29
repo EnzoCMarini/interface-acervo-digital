@@ -20,10 +20,10 @@ function LoginForm(): JSX.Element {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
         const login: LoginData = { email: email, senha: senha }
-        
+
         // lógica para autenticação do usuário
         try {
-            if(await AuthRequests.login(login)) {
+            if (await AuthRequests.login(login)) {
                 window.location.href = '/'; // redireciona para a página inicial
             }
         } catch (error) {
@@ -41,15 +41,15 @@ function LoginForm(): JSX.Element {
             <form action="POST" className={estilo['login-form']} onSubmit={handleSubmit}>
 
                 {/* Título do formulário */}
-                <h2>LOGIN</h2>
+                <h2 className={estilo['login-header']}>LOGIN</h2>
 
                 {/* Campo de e-mail com rótulo */}
                 <div className={estilo['form-group']}>
                     <label>
-                        Usuário
+                        E-mail
                         <input
-                            type="text" // Define o tipo do input como e-mail
-                            placeholder='Informe o seu usuário' // Texto de dica para o usuário
+                            type="email" // Define o tipo do input como e-mail
+                            placeholder='Informe o seu email' // Texto de dica para o usuário
                             className={estilo['input-email-login']} // Classe CSS personalizada
                             value={email}  // valor digitado no campo
                             onChange={(e) => setEmail(e.target.value)}  // atualiza o valor conforme usuário digita

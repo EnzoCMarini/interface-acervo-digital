@@ -1,33 +1,35 @@
 // Classe responsável por fazer requisições à API - livro
 class LivroRequests {
-    private serverUrl: string;
-    private endpointListarLivros: string;
+    private serverUrl;
+    private endpointLivro;
 
     constructor() {
         this.serverUrl = 'http://localhost:3333';
-        this.endpointListarLivros = '/api/livros';
+        this.endpointLivro = '/api/livros';
     }
 
-    async listarLivros() {
-        const token = localStorage.getItem('token');
+    async obterListaDeLivros() {
         try {
-            const response = await fetch(`${this.serverUrl}${this.endpointListarLivros}`, {
+            const token = localStorage.getItem('token');
+
+            const respostaAPI = await fetch(`${this.serverUrl}${this.endpointLivro}`, {
                 headers: {
+                    'Content-Type': 'application/json',
                     'x-access-token': `${token}`
                 }
             });
 
-            if(!response.ok) {
-                throw new Error('Não foi possível listar as livros.');
+            if (respostaAPI.ok) {
+                const listaDeAlunos = await respostaAPI.json();
+                return listaDeAlunos;
+            } else {
+                throw new Error(`Não foi possível listar os livros.`);
             }
-
-            return response.json();
         } catch (error) {
-            console.error(`Erro ao fazer consulta à API: ${error}`);
-            return null;
+            console.error(`Erro ao fazer a consulta de livros. ${error}`);
+            return;
         }
     }
-
 }
 
-export default new LivroRequests();
+export default new LivroRequests;
