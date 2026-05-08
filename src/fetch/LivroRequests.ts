@@ -1,4 +1,6 @@
 // Classe responsável por fazer requisições à API - livro
+import type LivroDTO from "../dto/LivroDTO";
+
 class LivroRequests {
     private serverUrl;
     private endpointLivro;
@@ -27,6 +29,28 @@ class LivroRequests {
             }
         } catch (error) {
             console.error(`Erro ao fazer a consulta de livros. ${error}`);
+            return;
+        }
+    }
+
+    async obterLivroPorId(id_livro: number): Promise<LivroDTO | undefined> {
+        try {
+            const token = localStorage.getItem('token');
+            const respostaAPI = await fetch(`${this.serverUrl}${this.endpointLivro}/${id_livro}`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-access-token': `${token}`
+                }
+            });
+
+            if (respostaAPI.ok) {
+                const Livro: LivroDTO = await respostaAPI.json();
+                return Livro;
+            } else {
+                throw new Error("Não foi possível buscar o livro.");
+            }
+        } catch (error) {
+            console.error(`Erro ao fazer a consulta de livro por ID. ${error}`);
             return;
         }
     }
