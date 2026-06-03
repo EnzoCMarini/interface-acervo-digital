@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 function ListagemEmprestimos(): JSX.Element {
     const [emprestimos, setEmprestimos] = useState<EmprestimoDTO[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 5;
+    const rowsPerPage = 7;
     const navigate = useNavigate();
 
     useEffect(() => {

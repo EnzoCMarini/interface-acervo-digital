@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 function ListagemLivros(): JSX.Element {
     const [livros, setLivros] = useState<LivroDTO[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
-    const rowsPerPage = 5;
+    const rowsPerPage = 7;
     const navigate = useNavigate();
 
     useEffect(() => {
