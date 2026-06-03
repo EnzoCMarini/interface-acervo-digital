@@ -1,10 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import EmprestimoRequests from '../../../fetch/EmprestimoRequests';
+import AlunoRequests from '../../../fetch/AlunoRequests';
+import LivroRequests from '../../../fetch/LivroRequests';
 import type EmprestimoDTO from '../../../dto/EmprestimoDTO';
+import type AlunoDTO from '../../../dto/AlunoDTO';
+import type LivroDTO from '../../../dto/LivroDTO';
 
 function FormEmprestimo() {
     const navigate = useNavigate();
+
+    const [alunos, setAlunos] = useState<AlunoDTO[]>([]);
+    const [livros, setLivros] = useState<LivroDTO[]>([]);
+
     const [formData, setFormData] = useState<EmprestimoDTO>({
         id_emprestimo: 0,
         aluno: { id_aluno: 0 },
@@ -14,17 +22,31 @@ function FormEmprestimo() {
         status_emprestimo: ''
     });
 
+    // Busca a lista de alunos e livros ao montar o componente para popular os selects
+    useEffect(() => {
+        const carregarDados = async () => {
+            const [listaAlunos, listaLivros] = await Promise.all([
+                AlunoRequests.obterListaDeAlunos(),
+                LivroRequests.obterListaDeLivros()
+            ]);
+            if (listaAlunos) setAlunos(listaAlunos);
+            if (listaLivros) setLivros(listaLivros);
+        };
+
+        carregarDados();
+    }, []);
+
     // Atualiza o state a partir de qualquer input do formulário
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
 
-        // Campos aninhados do aluno
+        // Quando o aluno é selecionado, salva o ID no objeto aninhado "aluno"
         if (name === 'id_aluno') {
             setFormData(prev => ({ ...prev, aluno: { ...prev.aluno, id_aluno: parseInt(value) } }));
             return;
         }
 
-        // Campos aninhados do livro
+        // Quando o livro é selecionado, salva o ID no objeto aninhado "livro"
         if (name === 'id_livro') {
             setFormData(prev => ({ ...prev, livro: { ...prev.livro, id_livro: parseInt(value) } }));
             return;
@@ -34,10 +56,9 @@ function FormEmprestimo() {
     };
 
     // Envia os dados para a requisição
-    const handleSubmit = async (e: React.SubmitEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault(); // evita o recarregamento da página
 
-        // Chama o método que irá fazer a requisição à API
         const resposta = await EmprestimoRequests.enviarFormularioEmprestimo(formData);
         if (resposta) {
             alert("Empréstimo cadastrado com sucesso");
@@ -55,36 +76,46 @@ function FormEmprestimo() {
                     </h1>
 
                     <div className="space-y-6 sm:space-y-8">
-                        {/* Linha 1: ID do Aluno e ID do Livro */}
+                        {/* Linha 1: Aluno e Livro */}
                         <div className="flex flex-col sm:flex-row gap-6">
                             <div className="flex-1">
                                 <label htmlFor="id_aluno" className="block text-sm font-semibold text-slate-700 mb-2">
-                                    ID do Aluno
+                                    Aluno
                                 </label>
-                                <input
-                                    type="number"
+                                <select
                                     name="id_aluno"
                                     id="id_aluno"
                                     required
                                     onChange={handleChange}
-                                    placeholder="Digite o ID do aluno"
-                                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-slate-500 focus:outline-none transition-all placeholder:text-slate-400"
-                                />
+                                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-slate-500 focus:outline-none transition-all text-slate-700"
+                                >
+                                    <option value="">Selecione um aluno</option>
+                                    {alunos.map(aluno => (
+                                        <option key={aluno.id_aluno} value={aluno.id_aluno}>
+                                            {aluno.nome} {aluno.sobrenome}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div className="flex-1">
                                 <label htmlFor="id_livro" className="block text-sm font-semibold text-slate-700 mb-2">
-                                    ID do Livro
+                                    Livro
                                 </label>
-                                <input
-                                    type="number"
+                                <select
                                     name="id_livro"
                                     id="id_livro"
                                     required
                                     onChange={handleChange}
-                                    placeholder="Digite o ID do livro"
-                                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-slate-500 focus:outline-none transition-all placeholder:text-slate-400"
-                                />
+                                    className="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-slate-500 focus:outline-none transition-all text-slate-700"
+                                >
+                                    <option value="">Selecione um livro</option>
+                                    {livros.map(livro => (
+                                        <option key={livro.id_livro} value={livro.id_livro}>
+                                            {livro.titulo}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                         </div>
 
