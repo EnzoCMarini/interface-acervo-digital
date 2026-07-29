@@ -31,6 +31,24 @@ function ListagemEmprestimos(): JSX.Element {
 
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
+    const handleRemoverEmprestimo = async (id_emprestimo: number) => {
+        const confirmar = window.confirm("Você realmente deseja remover este registro?");
+        if (confirmar) {
+            try {
+                const sucesso = await EmprestimoRequests.removerEmprestimo(id_emprestimo);
+                if (sucesso) {
+                    alert("Aluno removido com sucesso");
+                    setEmprestimos(emprestimos.filter(emprestimo => emprestimo.id_emprestimo !== id_emprestimo));
+                } else {
+                    alert("Não foi possível remover o registro.");
+                }
+            } catch (error) {
+                console.error("Erro ao remover emprestimo:", error);
+                alert("Erro ao remover emprestimo.");
+            }
+        }
+    };
+
     const formatDate = (date?: Date) => {
         if (!date) return "-";
         return new Date(date).toLocaleDateString('pt-BR');
@@ -87,7 +105,12 @@ function ListagemEmprestimos(): JSX.Element {
                                                     Detalhes
                                                 </button>
                                                 <button className="w-full sm:w-auto bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium hover:bg-emerald-600 hover:text-white transition-all">Atualizar</button>
-                                                <button className="w-full sm:w-auto bg-red-100 text-red-700 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium hover:bg-red-600 hover:text-white transition-all">Deletar</button>
+                                                <button
+                                                    className="w-full sm:w-auto bg-red-100 text-red-700 px-3 py-1.5 rounded-md text-xs md:text-sm font-medium hover:bg-red-600 hover:text-white transition-all"
+                                                    onClick={() => emp.id_emprestimo && handleRemoverEmprestimo(emp.id_emprestimo)}
+                                                >
+                                                    Deletar
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>
